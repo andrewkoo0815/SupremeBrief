@@ -15,6 +15,7 @@ mode = "test" # "test" or "all" or "holdings"
 
 default_dir = '/Users/andrewkoo/Workspace/Casetext/' + mode +'_cases/'
 
+# Get all the corresponding citation number of a case
 def get_citation(root):
 	citation_text = []
 	for citation in root.iter('citation'):
@@ -24,6 +25,7 @@ def get_citation(root):
 	else:
 		return "None"
 
+# Get the year of the case
 def get_date(root):
 	date = root.find('date')
 	date_text = date[0].text
@@ -35,6 +37,7 @@ def get_date(root):
 	else:
 		return "None"
 
+# Get the title of the case
 def get_title(root):
 	reporter_caption = root.find('reporter_caption')
 	reporter_caption_text = ''
@@ -43,6 +46,7 @@ def get_title(root):
 	textlist = reporter_caption_text.split(',')
 	return textlist[0]
 
+# Get the opinion text and other major text sections of the case
 def get_text(root, type):
 	section = root.findall(type)
 	section_text = ''
@@ -60,6 +64,7 @@ def get_text(root, type):
 	else:
 		return "None"
 
+# Get the concepts of the case from the concept.csv previously constructed
 def import_concept():
 	concept_database = {}
 	conceptcsv = open('concept.csv', 'rU')
@@ -78,6 +83,7 @@ def import_data(cases_dir = default_dir):
 
     # holdings_list = import_holdings.import_holdings()
 
+    # Create lookup table for file ID and citations
     allcitations = []
     lookupcsv = open('lookup.csv', 'wb')
     lookup_table = csv.writer(lookupcsv)
@@ -119,7 +125,7 @@ def import_data(cases_dir = default_dir):
 			elif (len(citations) == 2):
 				lookup_table.writerow([case_name_list[i], citations[0], citations[1]])
 
-			### Codes to copy files that have sumary into another directory
+			### Codes to copy files that have summary into another directory
 			# citations = get_citation(root)
 			# for j in range(len(citations)):
 			# 	if (citations[j] in holdings_list):

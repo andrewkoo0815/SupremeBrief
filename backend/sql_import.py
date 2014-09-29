@@ -14,11 +14,13 @@ import os
 import csv
 import import_cases
 
+# import cases information
 cases_info = import_cases.import_data('holdings_cases/')
 print "data_import_complete"
 file_dir_1 = 'holdings_opinion_learn_lsa/'
 file_dir_2 = 'holdings_opinion_learn_nn/'
 
+# construct the dic of case IDs to be imported to SQL 
 importlistcsv = open('lookup.csv', 'rU')
 import_list = csv.reader(importlistcsv)
 import_dic = {}
@@ -29,12 +31,14 @@ for row in import_list:
 		import_dic[row[1]] = row[0][:-4] + '.txt'
 		import_dic[row[2]] = row[0][:-4] + '.txt'
 
+# Connect to SQL casetext database
 con = mdb.connect('localhost', 'root', '', 'casetext') #host, user, password, #database
 
 
 with con:
 	cur = con.cursor()
 	cur.execute("DROP TABLE IF EXISTS Cases")
+	# Create the Cases table
 	cur.execute("CREATE TABLE Cases(Citation VARCHAR(25), Title text, The_Date VARCHAR(25), Summary1 text, Summary2 text, Concept text)")
 	for key in import_dic.keys():
 		case_id = import_dic[key][:-4]
@@ -45,6 +49,7 @@ with con:
 			document_summary2 = document2.read()
 			sentences1 = document_summary1.split('XXXXXX')
 			sentences2 = document_summary2.split('XXXXXX')
+			# Make sure five key sentences are picked for each algorithm and concepts are also extracted
 			if (len(sentences1) >= 5 and len(sentences2) >= 5 and cases_info[case_id]['concept'] != "None"):
 				cur.execute("INSERT INTO Cases (Citation, Title, The_Date, Summary1, Summary2, Concept) VALUES(%s, %s, %s, %s, %s, %s)", (key, cases_info[case_id]['title'], cases_info[case_id]['date'], document_summary1, document_summary2, cases_info[case_id]['concept']))
 

@@ -13,7 +13,7 @@ import regex
 import numpy
 import math
 
-
+# Create a dictionary of holdings imported from holdings.csv provided by Casetext
 def import_holdings():
 	holdingscsv = open('holdings.csv', 'rU')
 	holdings= csv.reader(holdingscsv)
@@ -25,6 +25,7 @@ def import_holdings():
 		holdings_dic[case_number] = case_holding
 	return holdings_dic
 
+# Import summary (top picked sentences) from the text file previously created
 def import_summary(filename):
 	file_dir = 'holdings_opinion_learn_lex/'
 	if (os.path.isfile(file_dir + filename)):
@@ -35,6 +36,7 @@ def import_summary(filename):
 	else:
 		return "None"
 
+# Create the lookup_dic imported from the lookup table (file ID and citation number)
 def import_lookup():
 	lookuplistcsv = open('lookup.csv', 'rU')
 	lookup_list = csv.reader(lookuplistcsv)
@@ -47,6 +49,7 @@ def import_lookup():
 			lookup_dic[row[2]] = row[0][:-4] + '.txt'
 	return lookup_dic
 
+# Get the corresponding vector of the sentences after removing numbers and the stop words.
 def get_vectors(wordlist):
 	stopwords = nltk.corpus.stopwords.words('english')
 	prefiltered = wordlist.split(' ')
@@ -58,12 +61,14 @@ def get_vectors(wordlist):
 	vector = nn_apply.get_sen_vec(filtered_words)
 	return vector
 
+# Find cosine similarity between holding and algorithm picked summary based on their vectors
 def find_similarity(holding, summary):
 	vector1 = get_vectors(holding)
 	vector2 = get_vectors(summary)
 	score = nn_apply.get_sim(vector1, vector2)
 	return score
 
+# Compute the N, mean, variance, of cosine similarities between holdings (expert written) and algorithm-picked sentences
 def main():
 	lookup_dic = import_lookup()
 	lookup_list = lookup_dic.keys()

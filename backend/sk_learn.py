@@ -23,7 +23,7 @@ def textrank(document, output_file = "sk_summary.txt"):
     similarity_graph = normalized * normalized.T
     # print similarity_graph
     
-    # Use pagerank to score the sentences in graph.
+    # Use Pagerank to score the sentences in graph.
     nx_graph = nx.from_scipy_sparse_matrix(similarity_graph)
     scores = nx.pagerank(nx_graph)
     

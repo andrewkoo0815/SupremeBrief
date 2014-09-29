@@ -22,8 +22,8 @@ from matplotlib import pylab
 from pylab import *
 from scipy import *
 
+# Create a csv file with each row as concepts of a case idenfied by case ID
 def import_concepts():
-
 	conceptcsv = open('concept.csv', 'wb')
 	concept_list = csv.writer(conceptcsv)
 	text_database = import_cases.import_data('holdings_cases/')
@@ -32,6 +32,7 @@ def import_concepts():
 		concept_list.writerow([text_database[keys[i]]['concept'], keys[i]])
 	conceptcsv.close()
 
+# Load the concepts of cases from the csv and tabulate the counts of each concept
 def analyze_concepts():
 	concept_database = {}
 	conceptcsv = open('concept.csv', 'rU')
@@ -51,13 +52,16 @@ def analyze_concepts():
 	concept_vectors = []
 	for keys in concept_database.keys():
 		concept_fulllist.append((keys, concept_database[keys]))
+		# Get the 25-dimensions vector for each concept
 		concept_vectors.append(nn_apply.get_sen_vec(keys.split(' ')))
 
 	vectors = numpy.array(concept_vectors)
+	# Use the TSNE library to transform the 25 dimensioned vector to only 2D for plotting
 	model = TSNE(n_components=2, random_state=0)
 	new_vectors = model.fit_transform(vectors)
 	
 	data_for_plot = []
+	# Modify the label of several concepts so they are shorter
 	for j in range(len(concept_fulllist)):
 		name = concept_fulllist[j][0]
 		name = name.replace("United States", "U.S.");
@@ -75,8 +79,8 @@ def analyze_concepts():
 
 	return data_for_plot
 
+# Plot the bubble graph based on the data
 def plot_bubble_graph(data_for_plot):
-
 
 	x = []
 	y = []

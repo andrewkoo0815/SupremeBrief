@@ -20,6 +20,7 @@ model = gensim.models.Word2Vec.load('NN_model2')
 keys = model.vocab.keys()
 size = 25
 
+# Get the corresponding vector of the sentence
 def get_sen_vec(sentence):
 	count = 0
 	vector = [0] * size
@@ -30,9 +31,11 @@ def get_sen_vec(sentence):
 	vector = np.divide(vector, count)
 	return vector
 
+# Get cosine similarity between vectors
 def get_sim(vector1, vector2):
 	return spatial.distance.cosine(vector1, vector2)
 
+# Retrieve the top-picked sentences from the output of Pagerank
 def get_top_sentences(pr, N):
 	keys = pr.keys()
 	sentence_list = []
@@ -47,38 +50,49 @@ def get_top_sentences(pr, N):
 		j = j + 1
 	return top_sentences
 
+# Creating the summary using the neural network (word2vec)
 def create_summary(text, output_file = "nn_summary.txt"):
 	stopwords = nltk.corpus.stopwords.words('english')
 	fulllist = []
 
 	retain_list = []
 
+	# Separate the text into sentences
 	wordlist = text.split('.')
 	for i in range(len(wordlist)):
+		# Separate the sentence into words
 		prefiltered = wordlist[i].split(' ')
 		halffiltered = []
+		# Remove all numbers
 		for j in range(len(prefiltered)):
 			halffiltered.append(regex.sub(r'[^a-zA-Z]','',prefiltered[j]))
+		# Remove all stopwords
 		filtered_words = [w for w in halffiltered if w.lower() not in stopwords and len(w) > 4]
+		# Retain sentences longer than a certain length
 		if (len(filtered_words) > 15):
 			fulllist.append(filtered_words)
 			retain_list.append(i)
 	
 	paragraph_size = len(fulllist)
 	vector_list = []
+	# Get the vector for each sentence
 	for i in range(paragraph_size):
 		vector_list.append(get_sen_vec(fulllist[i]))
 
+	# Create the similarity matrix
 	matrix = np.zeros(shape=(paragraph_size, paragraph_size))
 	for j in range(paragraph_size):
 		for k in range(paragraph_size):
 			matrix[j][k] = get_sim(vector_list[j], vector_list[k])
 
+	# Create the graph based on the similarity matrix
 	G = nx.Graph(matrix)
+	# Use Pagerank to rank the sentences
 	pr = nx.pagerank(G, alpha = 0.9)
 	N = 5
 	toplist = get_top_sentences(pr, N)
-	
+
+	# Write the output into a text file
 	record = open(output_file, "w")
 	ordered_list = toplist[:]
 	ordered_list.sort()

@@ -8,7 +8,7 @@ import csv
 import string
 import import_holdings
 
-
+# Import all holdings from the holdings.csv
 def import_holdings():
 	holdingscsv = open('holdings.csv', 'rU')
 	holdings= csv.reader(holdingscsv)

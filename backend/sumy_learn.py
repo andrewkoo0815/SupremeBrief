@@ -7,7 +7,7 @@ from __future__ import division, print_function, unicode_literals
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 
-# List of Summarizers
+# Import list of Summarizers
 from sumy.summarizers.lsa import LsaSummarizer
 from sumy.summarizers.edmundson import EdmundsonSummarizer
 from sumy.summarizers.lex_rank import LexRankSummarizer
@@ -19,6 +19,7 @@ from sumy.nlp.stemmers import Stemmer
 from sumy.utils import get_stop_words
 import numpy as np
 
+# Create the summarizer based on the selected algorithm
 def create_summarizer(algorithm, stemmer):
     options = ["lsa", "edmundson", "lex", "luhn", "random", "text"]
     if (algorithm == options[0]):
@@ -49,17 +50,21 @@ def create_summary(algorithm, input_file, output_file = "sumy_summary.txt"):
     summarizer.stop_words = get_stop_words(LANGUAGE)
 
     all_sentences = []
+    # Separate the paragraph into sentences
     for paragraph in parser.document.paragraphs:
         for sentence in paragraph.sentences:
             all_sentences.append(str(sentence))
 
     top_ranked_sentences = []
+    # Use the summarizer to get the top ranked sentences
     for sentence in summarizer(parser.document, N):
         top_ranked_sentences.append(str(sentence))
 
+    # Find the top ranked sentence
     for sentence in summarizer(parser.document, 1):
         top_sentence = str(sentence)
     
+    # Find the position (between 0 to 4) of the top ranked sentence
     position = top_ranked_sentences.index(top_sentence)
 
     # Save the sentences into an output file

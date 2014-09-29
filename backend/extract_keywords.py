@@ -7,7 +7,7 @@ import os; os.chdir('/Users/andrewkoo/Workspace/Casetext/')
 import rake
 import import_cases
 
-
+# Extract keywords of the case using the RAKE algorithm
 def extract_keywords(text):
 	keywords = rake.rake(text)
 	if (len(keywords) > 0):

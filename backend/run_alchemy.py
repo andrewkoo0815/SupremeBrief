@@ -9,6 +9,7 @@ import import_cases
 from alchemyapi import AlchemyAPI
 alchemyapi = AlchemyAPI()
 
+# Get the concept of a case from AlchemyAPI
 def get_concepts(text):
 
 	response = alchemyapi.concepts("text", text)
@@ -19,6 +20,7 @@ def get_concepts(text):
 		concept_list = []
 		count = 0
 		for i in range(len(concepts)):
+			# Only get the top 5 one and skip "United States" as it is in almost all cases
 			if (count < 5 and concepts[i]['text'] != "United States"):
 				concept_list.append(concepts[i]['relevance'].encode('utf-8'))
 				concept_list.append(concepts[i]['text'].encode('utf-8'))
@@ -35,6 +37,7 @@ def main():
 	text_database = import_cases.import_data('test_cases/')
 	filelist = text_database.keys()
 	
+	# Loop over the filelist to get the concept of each case
 	for i in range(len(filelist)):
 		if (i < 1):
 			file_id = filelist[i]
